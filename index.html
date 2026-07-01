@@ -639,10 +639,13 @@ const SUPABASE_URL = 'https://jhikzqiwlklluagzlvmn.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpoaWt6cWl3bGtsbHVhZ3psdm1uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4ODIyOTAsImV4cCI6MjA5ODQ1ODI5MH0.g9KsAZnBLzM3ctFuSyM43TvkRBH8qH7Gdk_LNjvlj2g';
 
 function supabaseFetch(path, opts){
-  return fetch(SUPABASE_URL+path, {
-    headers: {'apikey': SUPABASE_KEY, 'Authorization': 'Bearer '+SUPABASE_KEY, 'Content-Type':'application/json', 'Prefer': 'return=minimal', ...(opts.headers||{})},
-    ...opts
-  });
+  opts=opts||{};
+  const h={'apikey': SUPABASE_KEY, 'Authorization': 'Bearer '+SUPABASE_KEY, 'Content-Type':'application/json', 'Prefer': 'return=minimal'};
+  if(opts.headers)Object.assign(h,opts.headers);
+  const o={headers:h};
+  if(opts.method)o.method=opts.method;
+  if(opts.body)o.body=opts.body;
+  return fetch(SUPABASE_URL+path, o);
 }
 function saveToSupabase(d, method){
   const body = {
