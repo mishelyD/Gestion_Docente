@@ -652,7 +652,7 @@ function saveToSupabase(d, method){
     codigo: d.codigo, nombre: d.nombre, grado: d.grado||'', categoria: d.categoria||'', dedicacion: d.dedicacion||'',
     celular: d.celular||'', celular2: d.celular2||'', correo_personal: d.correo_personal||'', correo_institucional: d.correo_institucional||'',
     renacyt: d.renacyt||'NO', facultad: d.facultad||'', departamento: d.departamento||'', anio: d.anio||'',
-    roles: JSON.stringify(d.roles||[]), horarios: JSON.stringify(d.horarios||[])
+    roles: d.roles||[], horarios: d.horarios||[]
   };
   if(method==='DELETE'){supabaseFetch('/rest/v1/docentes?id=eq.'+d._sid, {method:'DELETE'});return}
   if(d._sid){supabaseFetch('/rest/v1/docentes?id=eq.'+d._sid, {method:'PATCH', body:JSON.stringify(body)});}
@@ -666,7 +666,12 @@ async function init(){
     let data=null;
     const r=await supabaseFetch('/rest/v1/docentes?select=*');
     if(r.ok){data=await r.json();data.forEach(d=>{d._sid=d.id;delete d.id})}
-    if(!data||!data.length){const r2=await fetch('docentes.json');data=await r2.json()}
+    if(!data||!data.length){
+      const baseDir=window.location.pathname.replace(/\/?$/, '/');
+      const r2=await fetch(baseDir+'docentes.json');
+      if(r2.ok)data=await r2.json();
+    }
+    if(!data||!data.length)throw new Error('No se pudieron cargar los datos');
     docentes=data;
     docentes.forEach(d=>{if(d.anio===undefined)d.anio=calcularAnio(d.codigo);d._search=(d.nombre+' '+d.codigo+' '+d.facultad).toLowerCase();if(!d.roles)d.roles=[];if(!d.horarios)d.horarios=[]});
     document.getElementById('loadingWrap').style.display='none';
