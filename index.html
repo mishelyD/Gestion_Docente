@@ -329,7 +329,7 @@ background-blend-mode:overlay}
   <nav class="sidebar-nav">
     <div class="nav-item active" data-page="roles"><span class="nav-icon">&#9878;</span><span>Designar Roles</span></div>
     <div class="nav-item" data-page="disponibilidad"><span class="nav-icon">&#9776;</span><span>Disponibilidad</span></div>
-    <div class="nav-item" data-page="database"><span class="nav-icon">&#9878;</span><span>Base de Datos</span></div>
+    <div class="nav-item" data-page="database"><span class="nav-icon">&#9878;</span><span>Informacion Docente</span></div>
   </nav>
   <div class="sidebar-footer"><span>UNFV &mdash; 2026</span><span><button class="logout-btn" id="logoutBtn">Cerrar sesion</button></span></div>
 </aside>
@@ -529,7 +529,7 @@ if(localStorage.getItem('darkMode')==='1'){document.body.classList.add('dark');t
 themeToggle.addEventListener('click',toggleTheme);
 
 // ========== NAV ==========
-const pageTitles={roles:'Designar Roles',disponibilidad:'Disponibilidad',database:'Base de Datos'};
+const pageTitles={roles:'Designar Roles',disponibilidad:'Disponibilidad',database:'Informacion Docente'};
 function navigateTo(page){
   document.querySelectorAll('.nav-item').forEach(el=>el.classList.toggle('active',el.dataset.page===page));
   document.querySelectorAll('.page').forEach(el=>el.classList.toggle('active',el.id==='page'+page[0].toUpperCase()+page.slice(1)));
