@@ -685,6 +685,7 @@ function supabaseFetch(path, opts){
   const o={headers:h};
   if(opts.method)o.method=opts.method;
   if(opts.body)o.body=opts.body;
+  if(opts.signal)o.signal=opts.signal;
   return fetch(SUPABASE_URL+path, o);
 }
 
@@ -744,11 +745,16 @@ document.getElementById('logoutBtn').addEventListener('click',logout);
 async function cargarDatos(){
   try{
     let data=null;
-    const r=await supabaseFetch('/rest/v1/docentes?select=*');
-    if(r.ok){data=await r.json();data.forEach(d=>{d._sid=d.id;delete d.id})}
+    // try Supabase with 5s timeout
+    try{
+      const controller=new AbortController();
+      const tid=setTimeout(()=>controller.abort(),5000);
+      const r=await supabaseFetch('/rest/v1/docentes?select=*', {signal:controller.signal});
+      clearTimeout(tid);
+      if(r.ok){data=await r.json();data.forEach(d=>{d._sid=d.id;delete d.id})}
+    }catch(e){/* fall through to local fallback */}
     if(!data||!data.length){
-      const baseDir=window.location.pathname.replace(/\/?$/, '/');
-      const r2=await fetch(baseDir+'docentes.json');
+      const r2=await fetch('docentes.json');
       if(r2.ok)data=await r2.json();
     }
     if(!data||!data.length)throw new Error('No se pudieron cargar los datos');
@@ -767,10 +773,15 @@ async function cargarDatos(){
   }
 }
 
-function init(){
+async function init(){
   if(_authToken){
     document.getElementById('loginOverlay').style.display='none';
-    cargarDatos();
+    await cargarDatos();
+    // if cargarDatos failed, show login again
+    if(document.getElementById('errorWrap').style.display==='flex'){
+      document.getElementById('loginOverlay').style.display='flex';
+      document.getElementById('loadingWrap').style.display='none';
+    }
   }
 }
 
