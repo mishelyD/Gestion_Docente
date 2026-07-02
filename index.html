@@ -953,10 +953,18 @@ function buscarDisponibilidad(){
 }
 function calcular(){
   if(selected.some(s=>s===null))return;
+  const catMap={PR:'Principal',AS:'Asociado',AX:'Auxiliar'};
+  const fullGrado=g=>{const u=(g||'').toUpperCase();return u.includes('DR')?'Doctor(a)':u.includes('MG')?'Magister':'(Sin grado)'};
   const copia=selected.map(s=>({...s}));
-  copia.sort((a,b)=>{const p=g=>{const u=(g||'').toUpperCase();if(u.includes('DR'))return 3;if(u.includes('MG'))return 2;return 1};const d=p(b.grado)-p(a.grado);return d!==0?d:a.anio-b.anio});
+  copia.sort((a,b)=>{
+    const gp=g=>{const u=(g||'').toUpperCase();if(u.includes('DR'))return 3;if(u.includes('MG'))return 2;return 1};
+    const cp=c=>c==='PR'?3:c==='AS'?2:1;
+    const dg=gp(b.grado)-gp(a.grado);if(dg!==0)return dg;
+    const dc=cp(b.categoria)-cp(a.categoria);if(dc!==0)return dc;
+    return a.anio-b.anio;
+  });
   const roles=['Presidente(a)','Secretario(a)','Vocal'],cls=['pres','sec','voc'];
-  document.getElementById('resultContent').innerHTML=copia.map((d,i)=>'<div class="result-item '+cls[i]+'"><div class="result-rank">'+roles[i]+'</div><div class="result-detail"><div class="r-name" onclick="showPerfil(docentes.find(el=>el.codigo===\''+d.codigo.replace(/'/g,"\\'")+'\'))">'+d.nombre+'</div><div class="r-meta">'+d.codigo+' &middot; '+d.facultad+' &middot; '+d.departamento+'</div><div class="r-razon">A\u00f1o: '+d.anio+(i>0&&copia[i-1].anio===d.anio?' (empate)':'')+'</div></div></div>').join('');
+  document.getElementById('resultContent').innerHTML=copia.map((d,i)=>'<div class="result-item '+cls[i]+'"><div class="result-rank">'+roles[i]+'</div><div class="result-detail"><div class="r-name" onclick="showPerfil(docentes.find(el=>el.codigo===\''+d.codigo.replace(/'/g,"\\'")+'\'))">'+d.nombre+'</div><div class="r-meta">'+d.codigo+' &middot; '+d.facultad+' &middot; '+d.departamento+'</div><div class="r-razon">'+fullGrado(d.grado)+' &middot; '+(catMap[d.categoria]||d.categoria)+' &middot; '+d.anio+'</div></div></div>').join('');
   const card=document.getElementById('resultCard');card.classList.add('show');card.scrollIntoView({behavior:'smooth',block:'start'});
 }
 function limpiar(){ROLES.forEach((_,i)=>clearSelection(i));document.getElementById('resultCard').classList.remove('show');document.getElementById('sharedDisp').style.display='none';document.getElementById('input-0').focus()}
