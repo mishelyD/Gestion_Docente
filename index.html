@@ -283,11 +283,37 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
   .autocomplete-wrap input{font-size:.78rem;padding:7px 8px}
   .modal{width:98%}
 }
+
+/* LOGIN */
+.login-overlay{position:fixed;inset:0;z-index:300;display:flex;align-items:center;justify-content:center;background:var(--bg)}
+.login-box{background:var(--surface);border-radius:14px;padding:32px;width:92%;max-width:380px;box-shadow:0 8px 30px rgba(0,0,0,.15);text-align:center}
+.login-box h1{font-size:1.15rem;margin-bottom:4px}
+.login-box p{font-size:.82rem;color:var(--text4);margin-bottom:20px}
+.login-box input{width:100%;padding:10px 12px;margin-bottom:12px;border:1.5px solid var(--border2);border-radius:8px;font-size:.9rem;outline:none;background:var(--input-bg);color:var(--text);transition:border-color .15s}
+.login-box input:focus{border-color:var(--accent)}
+.login-box .btn{width:100%;padding:11px;font-size:.92rem}
+.login-error{color:var(--danger);font-size:.82rem;margin-top:8px;display:none}
+.login-loading{display:none;margin-top:10px;font-size:.82rem;color:var(--text4)}
+.sidebar-footer .logout-btn{background:none;border:none;color:#555;cursor:pointer;font-size:.65rem;padding:0}
+.sidebar-footer .logout-btn:hover{color:#fff}
 </style>
 </head>
 <body>
 
 <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- LOGIN -->
+<div class="login-overlay" id="loginOverlay">
+  <div class="login-box">
+    <h1>Sistema de Gestion</h1>
+    <p>Padron Electoral 2026</p>
+    <input type="email" id="loginEmail" placeholder="Correo electronico" autocomplete="email">
+    <input type="password" id="loginPass" placeholder="Contrasena" autocomplete="current-password">
+    <button class="btn btn-primary" id="loginBtn">Iniciar Sesion</button>
+    <div class="login-error" id="loginError">Credenciales incorrectas</div>
+    <div class="login-loading" id="loginLoading">Iniciando sesion...</div>
+  </div>
+</div>
 
 <!-- ========== SIDEBAR ========== -->
 <aside class="sidebar" id="sidebar">
@@ -300,7 +326,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
     <div class="nav-item" data-page="disponibilidad"><span class="nav-icon">&#9776;</span><span>Disponibilidad</span></div>
     <div class="nav-item" data-page="database"><span class="nav-icon">&#9878;</span><span>Base de Datos</span></div>
   </nav>
-  <div class="sidebar-footer"><span>UNFV &mdash; 2026</span><span>v1.0</span></div>
+  <div class="sidebar-footer"><span>UNFV &mdash; 2026</span><span><button class="logout-btn" id="logoutBtn">Cerrar sesion</button></span></div>
 </aside>
 
 <!-- ========== MAIN ========== -->
@@ -638,14 +664,34 @@ function renderHorarioGrid(d){
 const SUPABASE_URL = 'https://jhikzqiwlklluagzlvmn.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpoaWt6cWl3bGtsbHVhZ3psdm1uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4ODIyOTAsImV4cCI6MjA5ODQ1ODI5MH0.g9KsAZnBLzM3ctFuSyM43TvkRBH8qH7Gdk_LNjvlj2g';
 
+let _authToken = localStorage.getItem('sb_token')||'';
+
 function supabaseFetch(path, opts){
   opts=opts||{};
-  const h={'apikey': SUPABASE_KEY, 'Authorization': 'Bearer '+SUPABASE_KEY, 'Content-Type':'application/json', 'Prefer': 'return=minimal'};
+  const h={'apikey': SUPABASE_KEY, 'Content-Type':'application/json', 'Prefer': 'return=minimal'};
+  if(_authToken)h['Authorization']='Bearer '+_authToken;
+  else h['Authorization']='Bearer '+SUPABASE_KEY;
   if(opts.headers)Object.assign(h,opts.headers);
   const o={headers:h};
   if(opts.method)o.method=opts.method;
   if(opts.body)o.body=opts.body;
   return fetch(SUPABASE_URL+path, o);
+}
+
+function supabaseLogin(email, pass){
+  return fetch(SUPABASE_URL+'/auth/v1/token?grant_type=password', {
+    method:'POST',
+    headers:{'apikey': SUPABASE_KEY, 'Content-Type':'application/json'},
+    body:JSON.stringify({email, password:pass})
+  });
+}
+
+function logout(){
+  _authToken='';
+  localStorage.removeItem('sb_token');
+  document.getElementById('loginOverlay').style.display='flex';
+  document.getElementById('loginEmail').value='';
+  document.getElementById('loginPass').value='';
 }
 function saveToSupabase(d, method){
   const body = {
@@ -660,8 +706,32 @@ function saveToSupabase(d, method){
 }
 function saveToStorage(){/* no-op, Supabase handles persistence */}
 
+// ========== LOGIN ==========
+document.getElementById('loginBtn').addEventListener('click', async function(){
+  const email=document.getElementById('loginEmail').value.trim();
+  const pass=document.getElementById('loginPass').value;
+  if(!email||!pass)return;
+  document.getElementById('loginError').style.display='none';
+  document.getElementById('loginLoading').style.display='block';
+  document.getElementById('loginBtn').disabled=true;
+  try{
+    const r=await supabaseLogin(email, pass);
+    const data=await r.json();
+    if(!r.ok||!data.access_token){document.getElementById('loginError').textContent='Credenciales incorrectas';document.getElementById('loginError').style.display='block';document.getElementById('loginLoading').style.display='none';document.getElementById('loginBtn').disabled=false;return}
+    _authToken=data.access_token;
+    localStorage.setItem('sb_token', _authToken);
+    document.getElementById('loginOverlay').style.display='none';
+    cargarDatos();
+  }catch(e){
+    document.getElementById('loginError').textContent='Error de conexion';document.getElementById('loginError').style.display='block';
+    document.getElementById('loginLoading').style.display='none';document.getElementById('loginBtn').disabled=false;
+  }
+});
+document.getElementById('loginPass').addEventListener('keydown',function(e){if(e.key==='Enter')document.getElementById('loginBtn').click()});
+document.getElementById('logoutBtn').addEventListener('click',logout);
+
 // ========== MAIN ==========
-async function init(){
+async function cargarDatos(){
   try{
     let data=null;
     const r=await supabaseFetch('/rest/v1/docentes?select=*');
@@ -684,6 +754,13 @@ async function init(){
     document.getElementById('loadingWrap').style.display='none';
     document.getElementById('errorWrap').style.display='flex';
     document.getElementById('errorMsg').textContent='Error: '+e.message;
+  }
+}
+
+function init(){
+  if(_authToken){
+    document.getElementById('loginOverlay').style.display='none';
+    cargarDatos();
   }
 }
 
