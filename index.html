@@ -12,12 +12,13 @@ html{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
 ::-webkit-scrollbar-track{background:var(--scrollbar-track)}
 ::-webkit-scrollbar-thumb{background:var(--scrollbar-thumb);border-radius:3px}
 html,body{height:100%;overflow:hidden}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f4f8f6;color:var(--text);display:flex;transition:background .2s,color .2s;position:relative}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f4f8f6;background-image:linear-gradient(rgba(26,90,74,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(26,90,74,.04) 1px,transparent 1px);background-size:30px 30px;color:var(--text);display:flex;transition:background .2s,color .2s;position:relative}
 input,button,select,textarea{font-family:inherit}
 
 /* SIDEBAR */
 .sidebar{width:240px;background:#fff;color:var(--sidebar-text);display:flex;flex-direction:column;flex-shrink:0;height:100vh;transition:margin-left .3s,background .2s;border-right:1px solid var(--sidebar-border)}
-.sidebar-logo{padding:22px 18px 16px;border-bottom:1px solid var(--sidebar-border);text-align:center}
+.sidebar-logo{padding:18px 18px 14px;border-bottom:1px solid var(--sidebar-border);text-align:center}
+.sidebar-logo-img{width:85%;max-width:140px;height:auto;margin-bottom:8px;display:block;margin-left:auto;margin-right:auto}
 .sidebar-logo div h1{font-size:.8rem;color:var(--accent);font-weight:700;letter-spacing:.5px}
 .sidebar-logo div p{font-size:.62rem;color:var(--text4);margin-top:3px}
 .sidebar-nav{flex:1;overflow-y:auto;padding:12px 0}
@@ -285,15 +286,21 @@ input,button,select,textarea{font-family:inherit}
 }
 
 /* LOGIN */
-.login-overlay{position:fixed;inset:0;z-index:300;display:flex;align-items:center;justify-content:center;background:var(--bg)}
-.login-box{background:var(--surface);border-radius:8px;padding:32px;width:92%;max-width:380px;border:1px solid var(--border);box-shadow:0 4px 16px rgba(0,0,0,.04);text-align:center}
-.login-box h1{font-size:1.15rem;margin-bottom:4px;color:var(--accent)}
-.login-box p{font-size:.82rem;color:var(--text4);margin-bottom:20px}
-.login-box input{width:100%;padding:10px 12px;margin-bottom:12px;border:1px solid var(--border2);border-radius:4px;font-size:.9rem;outline:none;background:var(--input-bg);color:var(--text);transition:border-color .15s}
-.login-box input:focus{border-color:var(--accent)}
-.login-box .btn{width:100%;padding:11px;font-size:.92rem}
-.login-error{color:var(--danger);font-size:.82rem;margin-top:8px;display:none}
-.login-loading{display:none;margin-top:10px;font-size:.82rem;color:var(--text4)}
+.login-overlay{position:fixed;inset:0;z-index:300;display:flex;align-items:center;justify-content:center;background:#eaf5f0;background-image:linear-gradient(rgba(26,90,74,.12) 1px,transparent 1px),linear-gradient(90deg,rgba(26,90,74,.12) 1px,transparent 1px);background-size:30px 30px}
+.login-box{background:#fff;border-radius:12px;padding:40px 36px 36px;width:92%;max-width:380px;border:1px solid var(--border);box-shadow:0 8px 32px rgba(26,90,74,.08);text-align:center}
+.login-box .login-icon{width:56px;height:56px;margin:0 auto 16px;background:var(--accent);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.6rem;color:#fff;box-shadow:0 4px 12px rgba(26,90,74,.2)}
+.login-box h1{font-size:1.1rem;margin-bottom:2px;color:var(--accent);letter-spacing:.3px}
+.login-box .login-sub{font-size:.78rem;color:var(--text4);margin-bottom:24px}
+.login-box input{width:100%;padding:11px 14px;margin-bottom:14px;border:1px solid var(--border2);border-radius:8px;font-size:.88rem;outline:none;background:var(--input-bg);color:var(--text);transition:border-color .2s,box-shadow .2s}
+.login-box input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(26,90,74,.1)}
+.login-box .btn{width:100%;padding:12px;font-size:.9rem;border-radius:8px;cursor:pointer;margin-top:4px}
+.login-box .btn:disabled{opacity:.6;cursor:default}
+.login-error{color:var(--danger);font-size:.8rem;margin-top:10px;display:none;background:#fcf0ee;padding:8px 12px;border-radius:6px}
+.login-loading{display:none;margin-top:14px;font-size:.8rem;color:var(--text4)}
+.login-loading .spinner{display:inline-block;width:18px;height:18px;border:2px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.login-footer{font-size:.7rem;color:var(--text4);margin-top:20px;border-top:1px solid var(--border);padding-top:16px}
+
 </style>
 </head>
 <body>
@@ -303,19 +310,22 @@ input,button,select,textarea{font-family:inherit}
 <!-- LOGIN -->
 <div class="login-overlay" id="loginOverlay">
   <div class="login-box">
+    <div class="login-icon">&#9998;</div>
     <h1>BASE DE DATOS DOCENTES</h1>
-    <p>Padron Electoral 2026</p>
+    <div class="login-sub">Padron Electoral 2026 &middot; UNFV</div>
     <input type="email" id="loginEmail" placeholder="Correo electronico" autocomplete="email">
     <input type="password" id="loginPass" placeholder="Contrasena" autocomplete="current-password">
     <button class="btn btn-primary" id="loginBtn">Iniciar Sesion</button>
     <div class="login-error" id="loginError">Credenciales incorrectas</div>
-    <div class="login-loading" id="loginLoading">Iniciando sesion...</div>
+    <div class="login-loading" id="loginLoading"><span class="spinner"></span>Iniciando sesion...</div>
+    <div class="login-footer">UNFV &mdash; 2026</div>
   </div>
 </div>
 
 <!-- ========== SIDEBAR ========== -->
 <aside class="sidebar" id="sidebar">
   <div class="sidebar-logo">
+    <img class="sidebar-logo-img" src="https://www.unfv.edu.pe/eupg/images/logo_eupg.png" alt="EPG UNFV">
     <div><h1>BASE DE DATOS DOCENTES</h1><p>Padron Electoral 2026</p></div>
   </div>
   <nav class="sidebar-nav">
@@ -455,6 +465,8 @@ input,button,select,textarea{font-family:inherit}
       </div>
     </div>
 
+
+
   </div>
 </div>
 
@@ -528,28 +540,76 @@ function closeSidebar(){document.getElementById('sidebar').classList.remove('ope
 document.getElementById('menuBtn').addEventListener('click',openSidebar);
 document.getElementById('sidebarOverlay').addEventListener('click',closeSidebar);
 
+/* SQL RLS Policies — ejecutar en Supabase SQL Editor:
+
+-- 1. Eliminar politica anterior permisiva
+DROP POLICY IF EXISTS "Allow all" ON docentes;
+
+-- 2. Asegurar RLS activado
+ALTER TABLE docentes ENABLE ROW LEVEL SECURITY;
+
+-- 3. SELECT solo para autenticados
+CREATE POLICY "select_docentes" ON docentes
+  FOR SELECT
+  USING (auth.role() = 'authenticated');
+
+-- 4. INSERT solo para autenticados
+CREATE POLICY "insert_docentes" ON docentes
+  FOR INSERT
+  WITH CHECK (auth.role() = 'authenticated');
+
+-- 5. UPDATE solo para autenticados
+CREATE POLICY "update_docentes" ON docentes
+  FOR UPDATE
+  USING (auth.role() = 'authenticated')
+  WITH CHECK (auth.role() = 'authenticated');
+
+-- 6. DELETE: NO se concede ninguna politica
+--    Esto bloquea TODO DELETE, incluso de usuarios autenticados.
+--    Para permitir eliminaciones individuales controladas en el futuro:
+--    CREATE POLICY "delete_docentes" ON docentes
+--      FOR DELETE
+--      USING (auth.role() = 'authenticated');
+*/
+
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
+
 // ========== MODAL PERFIL ==========
 const modalPerfil=document.getElementById('modalPerfil');
 const modalBody=document.getElementById('modalBody');
 function showPerfil(d){
   if(!d)return;
-  const g=d.grado?'<span class="value tag" style="background:var(--tag-grado-bg);color:var(--tag-grado-text)">'+d.grado+'</span>':'<span class="value" style="color:var(--text4)">-</span>';
   const catMap={PR:'Principal',AS:'Asociado',AX:'Auxiliar'};
   const dedMap={TC:'Tiempo Completo',TP:'Tiempo Parcial',DE:'Dedicacion Exclusiva'};
-  const rolMap={revisor_tesis:'Revisor de Plan de Tesis',asesor:'Asesor',jurado_sustentacion:'Jurado de Sustentacion'};
-  modalBody.innerHTML='<div class="modal-field"><label>Codigo</label><div class="value" style="font-weight:600;font-size:1rem">'+d.codigo+'</div></div>'
-    +'<div class="modal-field"><label>Apellidos y Nombres</label><div class="value" style="font-weight:600;font-size:1rem">'+d.nombre+'</div></div>'
-    +'<div class="modal-field"><label>Grado Academico</label><div>'+g+'</div></div>'
-    +'<div class="modal-field"><label>Categoria</label><div class="value">'+d.categoria+' &mdash; '+(catMap[d.categoria]||d.categoria)+'</div></div>'
-    +'<div class="modal-field"><label>Dedicacion</label><div class="value">'+d.dedicacion+' &mdash; '+(dedMap[d.dedicacion]||d.dedicacion)+'</div></div>'
-    +'<div class="modal-field"><label>A\u00f1o de Ingreso</label><div class="value"><span class="value tag" style="background:var(--tag-year-bg);color:var(--tag-year-text)">'+d.anio+'</span></div></div>'
-    +'<div class="modal-field"><label>Celular</label><div class="value">'+(d.celular||'-')+'</div></div>'
-    +'<div class="modal-field"><label>Celular 2</label><div class="value">'+(d.celular2||'-')+'</div></div>'
-    +'<div class="modal-field"><label>Correo Personal</label><div class="value">'+(d.correo_personal||'-')+'</div></div>'
-    +'<div class="modal-field"><label>Correo Institucional</label><div class="value">'+(d.correo_institucional||'-')+'</div></div>'
-    +'<div class="modal-field"><label>RENACYT</label><div class="value">'+(d.renacyt||'NO')+'</div></div>'
-    +'<div class="modal-field"><label>Facultad</label><div class="value" style="font-weight:500">'+d.facultad+'</div></div>'
-    +'<div class="modal-field"><label>Departamento Academico</label><div class="value">'+d.departamento+'</div></div>';
+  modalBody.textContent='';
+  function field(label,valueEl){
+    const f=document.createElement('div');f.className='modal-field';
+    const l=document.createElement('label');l.textContent=label;f.appendChild(l);
+    f.appendChild(valueEl);modalBody.appendChild(f);
+  }
+  function txt(v,big){
+    const s=document.createElement('span');s.className='value';
+    s.textContent=v||'-';
+    if(big)s.style.cssText='font-weight:600;font-size:1rem';
+    return s;
+  }
+  field('Codigo',txt(d.codigo,true));
+  field('Apellidos y Nombres',txt(d.nombre,true));
+  const gSpan=document.createElement('span');
+  if(d.grado){gSpan.textContent=d.grado;gSpan.style.cssText='background:var(--tag-grado-bg);color:var(--tag-grado-text);padding:2px 8px;border-radius:4px;font-size:.82rem'}else{gSpan.textContent='-';gSpan.style.color='var(--text4)'}
+  field('Grado Academico',gSpan);
+  field('Categoria',txt(d.categoria+' \u2014 '+(catMap[d.categoria]||d.categoria)));
+  field('Dedicacion',txt(d.dedicacion+' \u2014 '+(dedMap[d.dedicacion]||d.dedicacion)));
+  const ySpan=document.createElement('span');ySpan.textContent=d.anio;ySpan.style.cssText='background:var(--tag-year-bg);color:var(--tag-year-text);padding:2px 8px;border-radius:4px;font-size:.82rem';
+  field('A\u00f1o de Ingreso',ySpan);
+  field('Celular',txt(d.celular));
+  field('Celular 2',txt(d.celular2));
+  field('Correo Personal',txt(d.correo_personal));
+  field('Correo Institucional',txt(d.correo_institucional));
+  field('RENACYT',txt(d.renacyt||'NO'));
+  const fSpan=txt(d.facultad);fSpan.style.fontWeight='500';
+  field('Facultad',fSpan);
+  field('Departamento Academico',txt(d.departamento));
   modalPerfil.classList.add('show');
 }
 document.getElementById('modalClose').addEventListener('click',()=>modalPerfil.classList.remove('show'));
@@ -569,7 +629,7 @@ function renderDB(){
   document.getElementById('dbCounter').textContent=filtered.length+' de '+docentes.length+' docentes';
   if(!filtered.length){tbody.innerHTML='';empty.style.display='block';return}
   empty.style.display='none';
-  tbody.innerHTML=filtered.map(d=>{const ri=docentes.indexOf(d);return '<tr data-idx="'+ri+'"><td class="col-codigo"><input value="'+d.codigo+'" data-field="codigo"></td><td class="col-nombre"><span class="lnk">'+d.nombre+'</span></td><td class="col-grado"><select data-field="grado"><option value="">-</option><option value="Dr(a)." '+(d.grado==='Dr(a).'?'selected':'')+'>Dr(a).</option><option value="Mg." '+(d.grado==='Mg.'?'selected':'')+'>Mg.</option></select></td><td class="col-categoria"><select data-field="categoria">'+['PR','AS','AX'].map(v=>'<option value="'+v+'"'+(d.categoria===v?'selected':'')+'>'+v+'</option>').join('')+'</select></td><td class="col-dedicacion"><select data-field="dedicacion">'+['TC','TP','DE'].map(v=>'<option value="'+v+'"'+(d.dedicacion===v?'selected':'')+'>'+v+'</option>').join('')+'</select></td><td class="col-celular"><input value="'+(d.celular||'')+'" data-field="celular" placeholder="cel"></td><td class="col-email"><input value="'+(d.correo_personal||d.correo_institucional||'')+'" data-field="correo_personal" placeholder="email"></td><td class="col-renacyt"><select data-field="renacyt"><option value="NO" '+(d.renacyt==='NO'?'selected':'')+'>NO</option><option value="SI" '+(d.renacyt==='SI'?'selected':'')+'>SI</option></select></td><td class="col-facultad"><input value="'+d.facultad+'" data-field="facultad"></td><td class="col-accion"><button class="db-btn db-btn-danger">Elim</button></td></tr>'}).join('');
+  tbody.innerHTML=filtered.map(d=>{const ri=docentes.indexOf(d);return '<tr data-idx="'+ri+'"><td class="col-codigo"><input value="'+esc(d.codigo)+'" data-field="codigo"></td><td class="col-nombre"><span class="lnk">'+esc(d.nombre)+'</span></td><td class="col-grado"><select data-field="grado"><option value="">-</option><option value="Dr(a)." '+(d.grado==='Dr(a).'?'selected':'')+'>Dr(a).</option><option value="Mg." '+(d.grado==='Mg.'?'selected':'')+'>Mg.</option></select></td><td class="col-categoria"><select data-field="categoria">'+['PR','AS','AX'].map(v=>'<option value="'+v+'"'+(d.categoria===v?'selected':'')+'>'+v+'</option>').join('')+'</select></td><td class="col-dedicacion"><select data-field="dedicacion">'+['TC','TP','DE'].map(v=>'<option value="'+v+'"'+(d.dedicacion===v?'selected':'')+'>'+v+'</option>').join('')+'</select></td><td class="col-celular"><input value="'+esc(d.celular||'')+'" data-field="celular" placeholder="cel"></td><td class="col-email"><input value="'+esc(d.correo_personal||d.correo_institucional||'')+'" data-field="correo_personal" placeholder="email"></td><td class="col-renacyt"><select data-field="renacyt"><option value="NO" '+(d.renacyt==='NO'?'selected':'')+'>NO</option><option value="SI" '+(d.renacyt==='SI'?'selected':'')+'>SI</option></select></td><td class="col-facultad"><input value="'+esc(d.facultad)+'" data-field="facultad"></td><td class="col-accion"><button class="db-btn db-btn-danger">Elim</button></td></tr>'}).join('');
 }
 // event delegation for db-table
 document.getElementById('dbBody').addEventListener('change',function(e){
@@ -620,8 +680,8 @@ function buildFilterOpts(){
   const depts=[...new Set(docentes.map(d=>d.departamento).filter(Boolean))].sort();
   const sf=document.getElementById('filterFacultad'),sd=document.getElementById('filterDepto');
   const cf=sf.value,cd=sd.value;
-  sf.innerHTML='<option value="">Todas las facultades</option>'+facs.map(f=>'<option value="'+f.replace(/"/g,'&quot;')+'"'+(f===cf?' selected':'')+'>'+f+'</option>').join('');
-  sd.innerHTML='<option value="">Todos los departamentos</option>'+depts.map(d=>'<option value="'+d.replace(/"/g,'&quot;')+'"'+(d===cd?' selected':'')+'>'+d+'</option>').join('');
+  sf.innerHTML='<option value="">Todas las facultades</option>'+facs.map(f=>'<option value="'+esc(f)+'"'+(f===cf?' selected':'')+'>'+esc(f)+'</option>').join('');
+  sd.innerHTML='<option value="">Todos los departamentos</option>'+depts.map(d=>'<option value="'+esc(d)+'"'+(d===cd?' selected':'')+'>'+esc(d)+'</option>').join('');
 }
 
 // ========== DISPONIBILIDAD ==========
@@ -634,7 +694,7 @@ function renderDispList(){
   const list=document.getElementById('dispList');
   const filtered=q?docentes.filter(d=>(d.nombre+' '+d.codigo+' '+d.facultad).toLowerCase().includes(q)):docentes;
   if(!filtered.length){list.innerHTML='<div class="disp-list-empty">Sin resultados</div>';return}
-  list.innerHTML=filtered.map(d=>{const ri=docentes.indexOf(d);return '<div class="disp-list-item'+(ri===dispSelectedIdx?' active':'')+'" data-idx="'+ri+'"><div>'+d.nombre+'</div><div class="dl-code">'+d.codigo+' &middot; '+d.facultad+'</div></div>'}).join('');
+  list.innerHTML=filtered.map(d=>{const ri=docentes.indexOf(d);return '<div class="disp-list-item'+(ri===dispSelectedIdx?' active':'')+'" data-idx="'+ri+'"><div>'+esc(d.nombre)+'</div><div class="dl-code">'+esc(d.codigo)+' &middot; '+esc(d.facultad)+'</div></div>'}).join('');
   list.querySelectorAll('.disp-list-item').forEach(el=>{el.addEventListener('click',()=>selectDispDocente(parseInt(el.dataset.idx)))});
 }
 function selectDispDocente(idx){
@@ -647,7 +707,7 @@ function selectDispDocente(idx){
   document.getElementById('dispPlaceholder').style.display='none';
   document.getElementById('dispEditor').style.display='block';
   document.getElementById('dispName').textContent=d.nombre;
-  document.getElementById('dispMeta').innerHTML=d.codigo+' &middot; '+d.facultad+' &middot; '+d.departamento;
+  document.getElementById('dispMeta').innerHTML=esc(d.codigo)+' &middot; '+esc(d.facultad)+' &middot; '+esc(d.departamento);
   // roles
   const chips=document.getElementById('roleChips');
   chips.innerHTML=ROLE_OPTS.map(r=>'<div class="role-chip'+(d.roles.includes(r.key)?' active':'')+'" data-key="'+r.key+'"><span class="rc-icon">'+r.icon+'</span> '+r.label+'</div>').join('');
@@ -836,7 +896,7 @@ function showSuggestions(idx){
   lastQuery[idx]=val;
   const exclude=selected.map(s=>s?docentes.indexOf(s):null),results=getFiltered(val,exclude);
   if(results.length===0){suggest.innerHTML='<div class="no-result">Sin resultados</div>';suggest.classList.add('show');return}
-  suggest.innerHTML=results.map((di,ri)=>'<div class="item'+(ri===0?' highlight':'')+'" data-idx="'+di+'"><div class="s-name">'+docentes[di].nombre+'</div><div class="s-meta"><span class="s-code">'+docentes[di].codigo+'</span> &middot; '+docentes[di].facultad+' &middot; <strong>'+docentes[di].anio+'</strong></div></div>').join('');
+  suggest.innerHTML=results.map((di,ri)=>'<div class="item'+(ri===0?' highlight':'')+'" data-idx="'+di+'"><div class="s-name">'+esc(docentes[di].nombre)+'</div><div class="s-meta"><span class="s-code">'+esc(docentes[di].codigo)+'</span> &middot; '+esc(docentes[di].facultad)+' &middot; <strong>'+esc(docentes[di].anio)+'</strong></div></div>').join('');
   suggest.classList.add('show');highlights[idx]=0;
 }
 function hideSuggestions(idx){document.getElementById('suggest-'+idx).classList.remove('show')}
@@ -851,17 +911,17 @@ function onKeydown(idx,e){
 }
 document.addEventListener('mousedown',function(e){
   const item=e.target.closest('.item');if(!item)return;
-  const suggest=item.parentElement;if(!suggest||!suggest.classList.contains('suggestions')||!suggest.classList.contains('show'))return;
+  const suggest=item.parentElement;if(!suggest||!suggest.classList.contains('suggestions')||!suggest.classList.contains('show')||!suggest.id.startsWith('suggest-'))return;
   e.preventDefault();selectTeacher(parseInt(suggest.id.replace('suggest-','')),parseInt(item.dataset.idx));
 });
-function selectTeacher(idx,di){const d=docentes[di];selected[idx]=d;const input=document.getElementById('input-'+idx);input.value=d.nombre;input.classList.add('selected');document.getElementById('clear-'+idx).style.display='block';hideSuggestions(idx);lastQuery[idx]=d.nombre;const info=document.getElementById('info-'+idx);info.innerHTML=(d.grado?'<span class="tag tag-grado">'+d.grado+'</span>':'')+'<span class="tag tag-year">'+d.anio+'</span><span class="tag tag-fac tag-clickable" title="Ver perfil">'+d.facultad+'</span><span class="tag tag-dept">'+d.departamento+'</span>';info.classList.add('show');updateCalcularBtn();if(idx<2)document.getElementById('input-'+(idx+1)).focus()}
+function selectTeacher(idx,di){const d=docentes[di];selected[idx]=d;const input=document.getElementById('input-'+idx);input.value=d.nombre;input.classList.add('selected');document.getElementById('clear-'+idx).style.display='block';hideSuggestions(idx);lastQuery[idx]=d.nombre;const info=document.getElementById('info-'+idx);info.innerHTML=(d.grado?'<span class="tag tag-grado">'+esc(d.grado)+'</span>':'')+'<span class="tag tag-year">'+esc(d.anio)+'</span><span class="tag tag-fac tag-clickable" title="Ver perfil">'+esc(d.facultad)+'</span><span class="tag tag-dept">'+esc(d.departamento)+'</span>';info.classList.add('show');updateCalcularBtn();if(idx<2)document.getElementById('input-'+(idx+1)).focus()}
 function clearSelection(idx){selected[idx]=null;lastQuery[idx]='';const input=document.getElementById('input-'+idx);input.value='';input.classList.remove('selected');document.getElementById('clear-'+idx).style.display='none';document.getElementById('info-'+idx).classList.remove('show');updateCalcularBtn();input.focus()}
 function updateCalcularBtn(){document.getElementById('btnCalcular').disabled=!selected.every(s=>s!==null)}
 function poblarFacultades(){
   const sel=document.getElementById('randomFacultad');
   const sel2=document.getElementById('buscarFacultad');
   const facs=[...new Set(docentes.map(d=>d.facultad).filter(Boolean))].sort();
-  const opts=facs.map(f=>'<option value="'+f.replace(/"/g,'&quot;')+'">'+f+'</option>').join('');
+  const opts=facs.map(f=>'<option value="'+esc(f)+'">'+esc(f)+'</option>').join('');
   sel.innerHTML='<option value="">Seleccionar facultad...</option>'+opts;
   sel2.innerHTML='<option value="">Todas</option>'+opts;
 }
@@ -894,7 +954,7 @@ function designarAleatorio(){
     const idx=docentes.indexOf(d);
     if(idx>=0)selectTeacher(i,idx);
   });
-  document.getElementById('sharedDisp').innerHTML='<strong>Disponibilidad compartida:</strong> '+slot;
+  document.getElementById('sharedDisp').innerHTML='<strong>Disponibilidad compartida:</strong> '+esc(slot);
   document.getElementById('sharedDisp').style.display='block';
 }
 function buscarDisponibilidad(){
@@ -925,8 +985,8 @@ function buscarDisponibilidad(){
   resultados.style.display='block';
   resultados.innerHTML=filtered.map(d=>{
     const idx=docentes.indexOf(d);
-    const slots=d.horarios.join(', ');
-    return '<div class="disp-list-item" style="display:flex;justify-content:space-between;align-items:center;gap:8px;cursor:default" data-idx="'+idx+'"><div style="flex:1;min-width:0"><div style="font-weight:500;font-size:.85rem">'+d.nombre+'</div><div style="font-size:.75rem;color:var(--text4)">'+d.codigo+' &middot; '+d.facultad+'</div><div style="font-size:.72rem;color:var(--text4);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+slots+'</div></div><button class="db-btn db-btn-add" style="white-space:nowrap;flex-shrink:0;padding:5px 12px;font-size:.75rem" data-idx="'+idx+'">Seleccionar</button></div>';
+    const slots=esc(d.horarios.join(', '));
+    return '<div class="disp-list-item" style="display:flex;justify-content:space-between;align-items:center;gap:8px;cursor:default" data-idx="'+idx+'"><div style="flex:1;min-width:0"><div style="font-weight:500;font-size:.85rem">'+esc(d.nombre)+'</div><div style="font-size:.75rem;color:var(--text4)">'+esc(d.codigo)+' &middot; '+esc(d.facultad)+'</div><div style="font-size:.72rem;color:var(--text4);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+slots+'</div></div><button class="db-btn db-btn-add" style="white-space:nowrap;flex-shrink:0;padding:5px 12px;font-size:.75rem" data-idx="'+idx+'">Seleccionar</button></div>';
   }).join('');
   // attach click to select buttons
   resultados.querySelectorAll('.db-btn-add').forEach(btn=>{
@@ -959,10 +1019,12 @@ function calcular(){
     return a.anio-b.anio;
   });
   const roles=['Presidente(a)','Secretario(a)','Vocal'],cls=['pres','sec','voc'];
-  document.getElementById('resultContent').innerHTML=copia.map((d,i)=>'<div class="result-item '+cls[i]+'"><div class="result-rank">'+roles[i]+'</div><div class="result-detail"><div class="r-name" onclick="showPerfil(docentes.find(el=>el.codigo===\''+d.codigo.replace(/'/g,"\\'")+'\'))">'+d.nombre+'</div><div class="r-meta">'+d.codigo+' &middot; '+d.facultad+' &middot; '+d.departamento+'</div><div class="r-razon">'+fullGrado(d.grado)+' &middot; '+(catMap[d.categoria]||d.categoria)+' &middot; '+d.anio+'</div></div></div>').join('');
+  document.getElementById('resultContent').innerHTML=copia.map((d,i)=>'<div class="result-item '+cls[i]+'"><div class="result-rank">'+roles[i]+'</div><div class="result-detail"><div class="r-name" onclick="showPerfil(docentes.find(el=>el.codigo===\''+esc(d.codigo)+'\'))">'+esc(d.nombre)+'</div><div class="r-meta">'+esc(d.codigo)+' &middot; '+esc(d.facultad)+' &middot; '+esc(d.departamento)+'</div><div class="r-razon">'+esc(fullGrado(d.grado))+' &middot; '+esc(catMap[d.categoria]||d.categoria)+' &middot; '+esc(d.anio)+'</div></div></div>').join('');
   const card=document.getElementById('resultCard');card.classList.add('show');card.scrollIntoView({behavior:'smooth',block:'start'});
 }
 function limpiar(){ROLES.forEach((_,i)=>clearSelection(i));document.getElementById('resultCard').classList.remove('show');document.getElementById('sharedDisp').style.display='none';document.getElementById('input-0').focus()}
+
+
 
 init();
 </script>
