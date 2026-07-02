@@ -347,15 +347,35 @@ background-blend-mode:overlay}
     </div>
     <div class="error-wrap" id="errorWrap" style="display:none"><div class="error" id="errorMsg"></div></div>
 
-    <!-- PAGE: ROLES -->
+  <!-- PAGE: ROLES -->
     <div class="page active" id="pageRoles">
       <div class="page-header">
         <h2>Designar Roles</h2>
         <p>Seleccione 3 docentes para asignar Presidente, Secretario y Vocal</p>
       </div>
       <div class="card">
+        <h3>Buscar Disponibilidad</h3>
+        <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;align-items:end">
+          <div style="flex:1;min-width:160px">
+            <label style="font-size:.72rem;text-transform:uppercase;letter-spacing:.4px;color:var(--text4);font-weight:600;display:block;margin-bottom:3px">Facultad</label>
+            <select id="buscarFacultad" style="width:100%;padding:9px 12px;border:1px solid var(--border2);border-radius:4px;font-size:.85rem;outline:none;background:var(--input-bg);color:var(--text);cursor:pointer"><option value="">Todas</option></select>
+          </div>
+          <div style="flex:1;min-width:120px">
+            <label style="font-size:.72rem;text-transform:uppercase;letter-spacing:.4px;color:var(--text4);font-weight:600;display:block;margin-bottom:3px">Dia</label>
+            <select id="buscarDia" style="width:100%;padding:9px 12px;border:1px solid var(--border2);border-radius:4px;font-size:.85rem;outline:none;background:var(--input-bg);color:var(--text);cursor:pointer"><option value="">Cualquier dia</option><option value="Lunes">Lunes</option><option value="Martes">Martes</option><option value="Miercoles">Miercoles</option><option value="Jueves">Jueves</option><option value="Viernes">Viernes</option><option value="Sabado">Sabado</option></select>
+          </div>
+          <div style="flex:1;min-width:120px">
+            <label style="font-size:.72rem;text-transform:uppercase;letter-spacing:.4px;color:var(--text4);font-weight:600;display:block;margin-bottom:3px">Hora</label>
+            <select id="buscarHora" style="width:100%;padding:9px 12px;border:1px solid var(--border2);border-radius:4px;font-size:.85rem;outline:none;background:var(--input-bg);color:var(--text);cursor:pointer"><option value="">Cualquier hora</option><option value="10:00 am">10:00 am</option><option value="11:00 am">11:00 am</option><option value="12:00 m.">12:00 m.</option><option value="13:00 pm">13:00 pm</option><option value="14:00 pm">14:00 pm</option><option value="15:00 pm">15:00 pm</option><option value="16:00 pm">16:00 pm</option></select>
+          </div>
+          <button class="btn btn-primary" id="btnBuscarDisp" style="padding:9px 24px">Buscar</button>
+        </div>
+        <div id="buscarResultados" style="max-height:320px;overflow-y:auto;display:none"></div>
+        <div id="buscarEmpty" style="display:none;text-align:center;padding:20px;color:var(--text4);font-size:.85rem">No se encontraron docentes con esa disponibilidad</div>
+      </div>
+      <div class="card">
         <h3>Jurados</h3>
-<div id="aleatorioBar" style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;align-items:center">
+        <div id="aleatorioBar" style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;align-items:center">
            <select id="randomFacultad" style="flex:1;min-width:200px;padding:9px 12px;border:1px solid var(--border2);border-radius:4px;font-size:.85rem;outline:none;background:var(--input-bg);color:var(--text);cursor:pointer"><option value="">Seleccionar facultad...</option></select>
            <button class="btn db-btn-add" id="btnAleatorio" style="padding:9px 22px;border:none;border-radius:4px;font-size:.85rem;font-weight:500;cursor:pointer;background:var(--success);color:#fff;white-space:nowrap" disabled>Designar Aleatorio</button>
         </div>
@@ -786,6 +806,13 @@ function buildFields(){
   // random
   document.getElementById('btnAleatorio').addEventListener('click',designarAleatorio);
   document.getElementById('randomFacultad').addEventListener('change',function(){document.getElementById('btnAleatorio').disabled=!this.value});
+  // buscar disponibilidad
+  document.getElementById('btnBuscarDisp').addEventListener('click',buscarDisponibilidad);
+  document.getElementById('buscarDia').addEventListener('change',buscarDisponibilidad);
+  document.getElementById('buscarHora').addEventListener('change',buscarDisponibilidad);
+  document.getElementById('buscarFacultad').addEventListener('change',function(){
+    if(document.getElementById('buscarDia').value||document.getElementById('buscarHora').value)buscarDisponibilidad();
+  });
 }
 var debounceTimers=[0,0,0];
 var lastQuery=['','',''];
@@ -837,8 +864,11 @@ function clearSelection(idx){selected[idx]=null;lastQuery[idx]='';const input=do
 function updateCalcularBtn(){document.getElementById('btnCalcular').disabled=!selected.every(s=>s!==null)}
 function poblarFacultades(){
   const sel=document.getElementById('randomFacultad');
+  const sel2=document.getElementById('buscarFacultad');
   const facs=[...new Set(docentes.map(d=>d.facultad).filter(Boolean))].sort();
-  sel.innerHTML='<option value="">Seleccionar facultad...</option>'+facs.map(f=>'<option value="'+f.replace(/"/g,'&quot;')+'">'+f+'</option>').join('');
+  const opts=facs.map(f=>'<option value="'+f.replace(/"/g,'&quot;')+'">'+f+'</option>').join('');
+  sel.innerHTML='<option value="">Seleccionar facultad...</option>'+opts;
+  sel2.innerHTML='<option value="">Todas</option>'+opts;
 }
 function designarAleatorio(){
   const fac=document.getElementById('randomFacultad').value;
@@ -871,6 +901,55 @@ function designarAleatorio(){
   });
   document.getElementById('sharedDisp').innerHTML='<strong>Disponibilidad compartida:</strong> '+slot;
   document.getElementById('sharedDisp').style.display='block';
+}
+function buscarDisponibilidad(){
+  const fac=document.getElementById('buscarFacultad').value;
+  const dia=document.getElementById('buscarDia').value;
+  const hora=document.getElementById('buscarHora').value;
+  const resultados=document.getElementById('buscarResultados');
+  const empty=document.getElementById('buscarEmpty');
+  if(!dia&&!hora){
+    resultados.style.display='none';
+    empty.style.display='none';
+    return;
+  }
+  let filtered=docentes.filter(d=>d.horarios&&d.horarios.length>0);
+  if(fac)filtered=filtered.filter(d=>d.facultad===fac);
+  // match by day and/or time
+  filtered=filtered.filter(d=>{
+    for(let h=0;h<d.horarios.length;h++){
+      const slot=d.horarios[h];
+      if(dia&&hora){if(slot===dia+'-'+hora)return true}
+      else if(dia){if(slot.startsWith(dia+'-'))return true}
+      else if(hora){if(slot.endsWith('-'+hora))return true}
+    }
+    return false;
+  });
+  if(!filtered.length){resultados.style.display='none';empty.style.display='block';return}
+  empty.style.display='none';
+  resultados.style.display='block';
+  resultados.innerHTML=filtered.map(d=>{
+    const idx=docentes.indexOf(d);
+    const slots=d.horarios.join(', ');
+    return '<div class="disp-list-item" style="display:flex;justify-content:space-between;align-items:center;gap:8px;cursor:default" data-idx="'+idx+'"><div style="flex:1;min-width:0"><div style="font-weight:500;font-size:.85rem">'+d.nombre+'</div><div style="font-size:.75rem;color:var(--text4)">'+d.codigo+' &middot; '+d.facultad+'</div><div style="font-size:.72rem;color:var(--text4);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+slots+'</div></div><button class="db-btn db-btn-add" style="white-space:nowrap;flex-shrink:0;padding:5px 12px;font-size:.75rem" data-idx="'+idx+'">Seleccionar</button></div>';
+  }).join('');
+  // attach click to select buttons
+  resultados.querySelectorAll('.db-btn-add').forEach(btn=>{
+    btn.addEventListener('click',function(e){
+      e.stopPropagation();
+      const di=parseInt(this.dataset.idx);
+      const emptyIdx=selected.indexOf(null);
+      if(emptyIdx<0){alert('Ya hay 3 docentes seleccionados. Limpie uno primero.');return}
+      selectTeacher(emptyIdx,di);
+    });
+  });
+  // click on row opens perfil
+  resultados.querySelectorAll('.disp-list-item').forEach(row=>{
+    row.addEventListener('click',function(){
+      const di=parseInt(this.dataset.idx);
+      showPerfil(docentes[di]);
+    });
+  });
 }
 function calcular(){
   if(selected.some(s=>s===null))return;
